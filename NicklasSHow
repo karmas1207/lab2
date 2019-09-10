@@ -1,0 +1,223 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Lab2
+{
+    public enum zoneType { Questing = 1, Grinding = 2 }
+    public enum Loot { Copper = 1, Silver = 2, Gold = 3 }
+    class Program
+    {
+        static int amountOfQuests = 0;
+        static int zones = 0;
+        static string[] zoneName;
+        static int[] experienceGained;
+        static int[] experienceGainedGrinding = new int[5];
+        static double[] hoursPlayed = new double[5];
+        public static zoneType[] zoneTypes = new zoneType[10];
+        static int copper = 0;
+        static int silver = 0;
+        static int gold = 0;
+        public static int Copper
+        {
+            get { return copper; }
+            set
+            {
+                copper = value;
+                int amount = copper / 100;
+                if (amount > 0)
+                {
+                    silver += amount;
+                    copper -= (amount * 100);
+                }
+            }
+        }
+        public static int Silver
+        {
+            get { return silver; }
+            set
+            {
+                silver = value;
+                int amount = silver / 100;
+                if (amount > 0)
+                {
+                    gold += amount;
+                    silver -= (amount * 100);
+                }
+            }
+        }
+        public static void Main(string[] args)
+        {
+            Console.WriteLine(".. XP TRACKER .. \n");
+            //Initierar antalet quests med try-catch som reagerar ifall det inte är siffror.
+            while (amountOfQuests < 1)
+            {
+                try
+                {
+                    Console.WriteLine("How many quests have you done today?");
+                    amountOfQuests = int.Parse(Console.ReadLine());
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Wrong input.");
+                }
+            }
+            //Frågar om hur många zones
+            while (zones < 1)
+            {
+                try
+                {
+                    Console.WriteLine("In how many zones did you level?");
+                    zones = int.Parse(Console.ReadLine());
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Wrong input.");
+                }
+            }
+
+            //Uppdaterar arrayer
+            zoneName = new string[zones];
+            experienceGained = new int[amountOfQuests];
+
+            //Frågar om zoner samt grinding eller questing
+            Console.WriteLine("What zones did you level in?");
+            for (int ab = 0; ab < zoneName.Length; ab++)
+            {
+                zoneName[ab] = Console.ReadLine();
+                Console.WriteLine("Did you grind or quest in this zone? \n 1) Grind\n 2) Quest");
+                try
+                {
+                    int zoneTypeAnswer = int.Parse(Console.ReadLine());
+
+                    switch (zoneTypeAnswer)
+                    {
+                        case 1:
+                            zoneTypes[0] = (zoneType)Enum.Parse(typeof(zoneType), "Grinding");  
+                            Console.WriteLine("How much experience did you recieve by grinding?");
+                            experienceGainedGrinding[0] = int.Parse(Console.ReadLine());
+                            if (ab < zoneName.Length)
+                            {
+                                Console.WriteLine("What more zones did you level in?");
+                            }
+                            break;
+                        case 2:
+                            if (ab < zoneName.Length - 1)
+                            {
+                                zoneTypes[0] = (zoneType)Enum.Parse(typeof(zoneType), "Questing");
+                                Console.WriteLine("What more zones did you level in?");
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Wrong input.");
+                }
+            }
+
+            //Frågar om hur mycket experience man fått per zone
+            Console.WriteLine("How much experience did you get per quest");
+            for (int ac = 0; ac < experienceGained.Length; ac++)
+            {
+                try
+                {
+                    experienceGained[ac] = int.Parse(Console.ReadLine());
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Wrong input.");
+                }
+            }
+
+            //Frågar om vilken loot man tjänat in
+
+            while (copper == 0 || silver == 0 || gold == 0)
+            {
+                Console.WriteLine("What loot have you earned?");
+                Console.WriteLine("1) Copper: " + Copper.ToString());
+                Console.WriteLine("2) Silver: " + Silver.ToString());
+                Console.WriteLine("3) Gold: " + gold.ToString());
+
+                try
+                {
+                    Loot l = (Loot)int.Parse(Console.ReadLine());
+                switch (l)
+                {
+                    case Loot.Copper:
+                        Console.WriteLine("How much Copper have you earned?");
+                        while (!int.TryParse(Console.ReadLine(), out copper))
+                        {
+                            Console.WriteLine("Wrong input.");
+                            Console.WriteLine("How much Copper have you earned?");
+                        }
+                        Copper = copper;
+                        break;
+                    case Loot.Silver:
+                        Console.WriteLine("How much Silver have you earned?");
+                        while (!int.TryParse(Console.ReadLine(), out silver))
+                        {                            
+                            Console.WriteLine("Wrong input.");
+                            Console.WriteLine("How much Silver have you earned?");
+                        }
+                        Silver = silver;
+                        break;
+                    case Loot.Gold:
+                        Console.WriteLine("How much Gold have you earned?");
+                        while (!int.TryParse(Console.ReadLine(), out gold))
+                        {
+                            Console.WriteLine("Wrong input.");
+                            Console.WriteLine("How much Gold have you earned?");
+                        }
+                        break;
+                    default:
+                        break;
+                     }
+                }
+                catch
+                {
+                    Console.WriteLine("Wrong input.");
+                }
+            }
+
+         
+            //Frågar om antal timmar
+            int answerHours = 0;
+            Console.WriteLine("How many hours have you played?");
+            while (answerHours == 0)
+            {
+                try
+                {
+                    hoursPlayed[0] = double.Parse(Console.ReadLine());
+                    answerHours = 1;
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine("Wrong input.");
+                    answerHours = 0;
+                }
+            }
+
+            Array.Sort(zoneName);
+
+            //Sammanfattning
+            Console.WriteLine("You've done " + amountOfQuests + " Quests and earned " + experienceGained.Sum() + " xp.");
+            Console.WriteLine("Experience gained per quest = " + experienceGained.Sum() / amountOfQuests);
+            Console.WriteLine("Experience gained per hour = " + experienceGained.Sum() / hoursPlayed.Sum());
+            Console.WriteLine("Loot gained: " + copper.ToString() + " Coppar. " + silver.ToString() + " Silver. " + gold.ToString() + " Gold. \n");
+            Console.WriteLine("Loot gained per hour = " + (int)copper / hoursPlayed.Sum() + " coppar, " + (int)silver / hoursPlayed.Sum() + " silver and " + (int)gold / hoursPlayed.Sum() + " gold.");
+            Console.WriteLine("You have quested in the zones = " + "{0}", string.Join(", ", zoneName));
+            Console.WriteLine("You were more effecient in: ", zoneTypes.Max());
+
+
+            Console.ReadKey();
+
+
+
+        }
+    }
+}
